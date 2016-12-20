@@ -104,7 +104,7 @@ open class Giphy {
                 }
 			}
             
-            func isValid() -> Bool {
+            public func isValid() -> Bool {
                 return URL != nil && width != 0 && height != 0
             }
 		}
