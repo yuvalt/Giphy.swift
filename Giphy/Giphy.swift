@@ -73,7 +73,7 @@ open class Giphy {
 		public struct ImageMetadata {
 
 			/// The url of the gif.
-			public let URL: Foundation.URL
+			public let URL: Foundation.URL?
 
 			/// The width of the gif in pixels.
 			public let width: Int
@@ -91,19 +91,22 @@ open class Giphy {
 			public let mp4URL: Foundation.URL?
 
 			init(dict: [String: Any]) {
-
-				URL = Foundation.URL(string: (dict["url"] as AnyObject).stringValue)!
-				width = ((dict["width"] as AnyObject).intValue)!
-				height = ((dict["height"] as AnyObject).intValue)!
+				URL = Foundation.URL(string: dict["url"] as? String ?? "")
+				width = (dict["width"] as AnyObject).intValue ?? 0
+				height = (dict["height"] as AnyObject).intValue ?? 0
 				size = (dict["size"] as AnyObject).intValue
 				frames = (dict["frames"] as AnyObject).intValue
-				if let mp4 = (dict["mp4"] as AnyObject).stringValue {
+				if let mp4 = dict["mp4"] as? String {
 					mp4URL = Foundation.URL(string: mp4)
                 }
                 else {
                     mp4URL = nil
                 }
 			}
+            
+            func isValid() -> Bool {
+                return URL != nil && width != 0 && height != 0
+            }
 		}
 
 		/// The raw json data from giphy for the gif object.
@@ -155,28 +158,28 @@ open class Giphy {
 
 				switch type {
 				case .FixedHeight:
-					dict["url"] = noPath.appendingPathComponent("200.gif") as AnyObject?
+					dict["url"] = noPath.appendingPathComponent("200.gif").absoluteString
 					dict["width"] = Int(json["fixed_height_downsampled_width"] as! String)!
-					dict["height"] = 200 as AnyObject?
-					dict["mp4"] = noPath.appendingPathComponent("200.mp4") as AnyObject?
+					dict["height"] = 200
+					dict["mp4"] = noPath.appendingPathComponent("200.mp4").absoluteString
 
 				case .FixedHeightDownsampled:
-					dict["url"] = noPath.appendingPathComponent("200_d.gif") as AnyObject?
+					dict["url"] = noPath.appendingPathComponent("200_d.gif").absoluteString
 					dict["width"] = Int(json["fixed_height_downsampled_width"] as! String)!
-					dict["height"] = 200 as AnyObject?
-					dict["mp4"] = noPath.appendingPathComponent("200_d.mp4") as AnyObject?
+					dict["height"] = 200
+					dict["mp4"] = noPath.appendingPathComponent("200_d.mp4").absoluteString
 				case .FixedWidth:
-					dict["url"] = noPath.appendingPathComponent("200w.gif") as AnyObject?
-					dict["width"] = 200 as AnyObject?
+					dict["url"] = noPath.appendingPathComponent("200w.gif").absoluteString
+					dict["width"] = 200
 					dict["height"] = Int(json["fixed_width_downsampled_height"] as! String)!
-					dict["mp4"] = noPath.appendingPathComponent("200w.mp4") as AnyObject?
+					dict["mp4"] = noPath.appendingPathComponent("200w.mp4").absoluteString
 				case .FixedWidthDownsampled:
-					dict["url"] = noPath.appendingPathComponent("200w_d.gif") as AnyObject?
-					dict["width"] = 200 as AnyObject?
+					dict["url"] = noPath.appendingPathComponent("200w_d.gif").absoluteString
+					dict["width"] = 200
 					dict["height"] = Int(json["fixed_width_downsampled_height"] as! String)!
-					dict["mp4"] = noPath.appendingPathComponent("200w_d.mp4") as AnyObject?
+					dict["mp4"] = noPath.appendingPathComponent("200w_d.mp4").absoluteString
 				case .Original:
-					dict["url"] = img as AnyObject?
+					dict["url"] = img
 					dict["width"] = Int(json["image_width"] as! String)!
 					dict["height"] = Int(json["image_height"] as! String)!
 					dict["mp4"] = json["image_mp4_url"]
@@ -184,7 +187,7 @@ open class Giphy {
 
 				if still {
 					let url = dict["url"] as! URL
-					dict["url"] = url.deletingPathExtension().appendingPathComponent("_s.gif") as AnyObject?
+					dict["url"] = url.deletingPathExtension().appendingPathComponent("_s.gif")
 					dict.removeValue(forKey: "mp4")
 				}
 
