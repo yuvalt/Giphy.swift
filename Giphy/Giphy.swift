@@ -92,12 +92,12 @@ open class Giphy {
 
 			init(dict: [String: Any]) {
 
-				URL = Foundation.URL(string: dict["url"] as! String)!
+				URL = Foundation.URL(string: (dict["url"] as AnyObject).stringValue)!
 				width = ((dict["width"] as AnyObject).intValue)!
 				height = ((dict["height"] as AnyObject).intValue)!
 				size = (dict["size"] as AnyObject).intValue
 				frames = (dict["frames"] as AnyObject).intValue
-				if let mp4 = dict["mp4"] as? String {
+				if let mp4 = (dict["mp4"] as AnyObject).stringValue {
 					mp4URL = Foundation.URL(string: mp4)
                 }
                 else {
